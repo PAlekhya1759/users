@@ -3,23 +3,14 @@
 /**
  * Module dependencies.
  */
-let should = require('should'),
-    request = require('supertest'),
-    app = require('../index'),
-    agent = request.agent(app);
-let { User } = require('./db/models');
+let should = require('should');
 let userController = require('../controllers/user.server.controller');
-/**
- * Globals
- */
-let valusers, contact;
 
-/**
- * Unit tests
- */
+/*  Unit tests */
 
 describe('User CRUD Unit Tests:', function () {
     before(function(done) {
+        /* Data for all the test cases */
         users = [
         {}, 
         {
@@ -72,7 +63,7 @@ describe('User CRUD Unit Tests:', function () {
         });
     });
 
-    /* Case 3: Throw error when there is no username */
+    /* Case 3: Throw error when there is no proper username */
     it('should not be able to create user without proper username', function(done) {
         userController.signUpDataValidation(users[2], function(err) {
             should.exist(err);

@@ -1,9 +1,9 @@
-let config = require('../config');
+const config = require('../config');
 const jwt = require('jwt-simple');
 const { User } = require('../db/models');
 const mongoose = require('mongoose');
 
-
+// Token generation
 function generateToken(username, done) {
     let date = new Date().setDate(new Date().getDate() + 7);
     const payLoad = {
@@ -13,6 +13,7 @@ function generateToken(username, done) {
     done(null,jwt.encode(payLoad, config.tokenSecret));
 }
 
+// Validating data before creating user
 exports.signUpDataValidation = function(data, done) {
     if(!data || (data && !Object.keys(data).length)) {
         done('Proper data is required for user registration');
@@ -34,6 +35,7 @@ exports.signUpDataValidation = function(data, done) {
     }
 };
 
+//Checking whether same user is already created or not and then creating user
 exports.findOrRegisterUser = function(data,done) {
     User.findOne({deleted:false, username: data.username}).exec(function(findErr, user) {
         if(findErr) {
@@ -55,6 +57,7 @@ exports.findOrRegisterUser = function(data,done) {
     });
 };
 
+// Fetch user by token
 exports.getUserByToken = function(data, done) {
     let token = (data.body.token || data.headers.token);
     let info = jwt.decode(token,config.tokenSecret);
@@ -67,6 +70,7 @@ exports.getUserByToken = function(data, done) {
     }
 };
 
+// Fetching user by Id
 exports.findUserByQuery = function(userId, done) {
     User.aggregate([{
         $match : {_id: mongoose.Types.ObjectId(userId), deleted: false }
@@ -86,6 +90,7 @@ exports.findUserByQuery = function(userId, done) {
     });
 };
 
+// Fetching users list
 exports.findUsersList = function(query, pageOptions, done) {
     User.find(query).skip(pageOptions.page > 0 ? ((pageOptions.page - 1) * pageOptions.limit) : 0).limit(pageOptions.limit ? pageOptions.limit : 10).exec(function(findErr, findRes) {
         done(findErr, findRes);

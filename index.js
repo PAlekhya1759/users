@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 
 /* USER ROUTES */
 
+//API to get list of users
 app.get('/users', (req,res) => {
     userController.getUserByToken(req, function(err, user) {
         if (err) {
@@ -47,6 +48,7 @@ app.get('/users', (req,res) => {
     });
 });
 
+// API to create new user and generating JWT token
 app.post('/users', (req,res) => {
     userController.signUpDataValidation(req.body, function(err) {
         if(err) {
@@ -63,6 +65,7 @@ app.post('/users', (req,res) => {
    });
 });
 
+// API to get single user using ID
 app.get('/users/:userId', (req, res) => {
     userController.getUserByToken(req, function(err, loginUser) {
         if (err) {
@@ -83,6 +86,7 @@ app.get('/users/:userId', (req, res) => {
     });
 });
 
+//API to Update a single user using ID
 app.put('/users/:userId', (req, res) => {
     userController.getUserByToken(req, function(err, loginUser) {
         if (err) {
@@ -115,6 +119,7 @@ app.put('/users/:userId', (req, res) => {
 
 /* TASK ROUTES */
 
+//API to create task
 app.post('/tasks', (req,res) => {
     userController.getUserByToken(req, function(err, loginUser) {
         if(err) {
@@ -137,7 +142,7 @@ app.post('/tasks', (req,res) => {
    });
 });
 
-
+//Start server
 app.listen(8000, () => {
     console.log('Server is listening on port 8000');
 });
