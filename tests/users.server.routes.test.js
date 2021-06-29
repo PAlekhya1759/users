@@ -18,6 +18,8 @@ describe('User CRUD Unit Tests:', function () {
         }, {
             username:'alekhya'
         }, {
+            username:'alekhya@gmail.com'
+        }, {
             username:'alekhya@gmail.com',
             password:'',
         }, {
@@ -33,7 +35,7 @@ describe('User CRUD Unit Tests:', function () {
             username:'alekhya@yahoo.com',
             password:'password',
             email: 'abcd@gmail.com',
-            mobile: 9999977777
+            mobile: "9999977777"
         }, {
             username:'alekhya@outlook.com',
             password:'password'
@@ -90,9 +92,18 @@ describe('User CRUD Unit Tests:', function () {
         });
     });
 
-    /* Case 6: Should be able to create user */
-     it('should be able to create user with proper data', function(done) {
+    /* Case 6: Throw error when password length is less than 8 */
+    it('should not be able to create user with empty password', function(done) {
         userController.signUpDataValidation(users[5], function(err) {
+            should.exist(err);
+            err.should.equal('Password length should not be less than 8');
+            done();
+        });
+    });
+
+    /* Case 7: Should be able to create user */
+     it('should be able to create user with proper data', function(done) {
+        userController.signUpDataValidation(users[6], function(err) {
             should.not.exist(err);
             userController.findOrRegisterUser(req.body, function(findErr, finalUser) {
                 should.not.exist(findErr);
@@ -103,9 +114,9 @@ describe('User CRUD Unit Tests:', function () {
         });
     });
 
-    /* Case 7: Should not be able to create users with duplicate username */
+    /* Case 8: Should not be able to create users with duplicate username */
     it('should not be able to create user with same username', function(done) {
-        userController.signUpDataValidation(users[6], function(err) {
+        userController.signUpDataValidation(users[7], function(err) {
             should.not.exist(err);
             userController.findOrRegisterUser(req.body, function(findErr, finalUser) {
                 should.exist(findErr);
@@ -115,11 +126,11 @@ describe('User CRUD Unit Tests:', function () {
         });
     });
 
-    /* Case 8: Should be able to create user */
+    /* Case 9: Should be able to create user */
     it('should be able to create user with all data', function(done) {
-        userController.signUpDataValidation(users[7], function(err) {
+        userController.signUpDataValidation(users[8], function(err) {
             should.not.exist(err);
-            userController.findOrRegisterUser(users[7], function(findErr, finalUser) {
+            userController.findOrRegisterUser(users[8], function(findErr, finalUser) {
                 should.not.exist(findErr);
                 should.exist(findUser);
                 finalUser.user.username.should.equal('alekhya@yahoo.com');
@@ -129,7 +140,7 @@ describe('User CRUD Unit Tests:', function () {
         });
     });
 
-    /* Case 9: To get the list of all users */
+    /* Case 10: To get the list of all users */
     it('should be able to get the list of all users', function(done) {
         userController.findUsersList({deleted:false}, {page: 1, limit:10}, function(findErr, findRes) {
             should.not.exist(findErr);
@@ -139,11 +150,11 @@ describe('User CRUD Unit Tests:', function () {
         });
     });
 
-    /* Case 10: Should be able to get single user */
+    /* Case 11: Should be able to get single user */
     it('should be able to get single user', function(done) {
-        userController.signUpDataValidation(users[8], function(err) {
+        userController.signUpDataValidation(users[9], function(err) {
             should.not.exist(err);
-            userController.findOrRegisterUser(users[8], function(findErr, finalUser) {
+            userController.findOrRegisterUser(users[9], function(findErr, finalUser) {
                 should.not.exist(findErr);
                 should.exist(findUser);
                 finalUser.user.username.should.equal('alekhya@outlook.com');
