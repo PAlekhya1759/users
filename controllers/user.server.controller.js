@@ -84,4 +84,10 @@ exports.findUserByQuery = function(userId, done) {
     }]).exec(function(aggregateErr, finalUser) {
         done(aggregateErr, finalUser);
     });
+};
+
+exports.findUsersList = function(query, pageOptions, done) {
+    User.find(query).skip(pageOptions.page > 0 ? ((pageOptions.page - 1) * pageOptions.limit) : 0).limit(pageOptions.limit ? pageOptions.limit : 10).exec(function(findErr, findRes) {
+        done(findErr, findRes);
+    });
 }
