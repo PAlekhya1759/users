@@ -31,7 +31,7 @@ app.get('/users', (req,res) => {
             if (req.query.limit) {
                 pageOptions.limit = parseInt(req.query.limit, 10);
             }
-            User.find({ deleted:false }).skip(pageOptions.page > 0 ? ((pageOptions.page - 1) * pageOptions.limit) : 0).limit(pageOptions.limit ? pageOptions.limit : 10).exec(function(findErr, findRes) {
+            userController.findUsersList({deleted:false}, pageOptions, function(findErr, findRes) {
                 if(findErr) {
                     res.status(400).send({
                         status: false,
@@ -61,6 +61,26 @@ app.post('/users', (req,res) => {
             });
         }
    });
+});
+
+app.get('/users/:userId', (req, res) => {
+    userController.getUserByToken(req, function(err, loginUser) {
+        if (err) {
+             res.status(400).send({ status: false, message: err });
+        } else if(loginUser) {
+            userController.findUserByQuery(req.params.userId, function(userErr, userRes) {
+                if(userErr) {
+                    res.send({status: 400, message: userErr});
+                } else if(userRes && userRes.length) {
+                    res.send(userRes[0]);
+                } else {
+                    res.send({status: 400, message: 'No User found with the given data'});
+                }
+            });
+        } else {
+            res.send({status: 400, message: 'No User'});
+        }
+    });
 });
 
 app.put('/users/:userId', (req, res) => {
@@ -93,24 +113,30 @@ app.put('/users/:userId', (req, res) => {
     });
 });
 
-app.get('/users/:userId', (req, res) => {
+/* TASK ROUTES */
+
+app.post('/tasks', (req,res) => {
     userController.getUserByToken(req, function(err, loginUser) {
-        if (err) {
-             res.status(400).send({ status: false, message: err });
-        } else if(loginUser) {
-            console.log(req.params.userId);
-            userController.findUserByQuery(req.params.userId, function(userErr, userRes) {
-                if(userErr) {
-                    res.send({status: 400, message: userErr});
-                } else {
-                    res.send(userRes);
-                }
-            });
+        if(err) {
+            res.send({ status:400, message: err });
         } else {
-            res.send({status: 400, message: 'No User'});
+            let task = new Task(req.body);
+            if(task && Object.keys(task) && Object.keys(task).length) {
+                task.user = loginUser._id;
+                task.save(function(saveErr, saveRes) {
+                    if (saveErr) {
+                        res.status(400).send({ status: false, message: saveErr });
+                } else {
+                    res.send(saveRes);
+                }
+                });
+            } else {
+                res.send({ status:400, message: 'No data found to create task' });
+            }
         }
-    });
+   });
 });
+
 
 app.listen(8000, () => {
     console.log('Server is listening on port 8000');
